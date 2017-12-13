@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+    
+		<!-- 允许Hibernate针对特定的关系数据库生成优化的SQL -->
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        
+        <!-- 输出所有SQL语句到控制台 -->
+        <property name="hibernate.show_sql">true</property>
+        
+        <!-- 在log和console中打印出更漂亮的SQL-->
+        <property name="hibernate.format_sql">true</property>
+        
+		<!-- 映射实体类 -->
+       	<mapping class="com.sohu.model.User"/>
+       	<mapping class="com.sohu.model.App"/>
+        <mapping class="com.sohu.model.Group"/>
+        <mapping class="com.sohu.model.UserGroup"/>
+    </session-factory>
+</hibernate-configuration>

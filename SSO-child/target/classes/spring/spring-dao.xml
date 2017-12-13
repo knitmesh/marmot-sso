@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/task  http://www.springframework.org/schema/task/spring-task-3.1.xsd">
+
+	<context:component-scan base-package="com.sso.dao" />
+	<context:property-placeholder location="classpath:c3p0.properties" />
+
+	<!-- destroy-method=close 当数据库连接不使用的时候,把连接放入数据库中 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${c3p0.driverClass}" />
+		<property name="jdbcUrl" value="${c3p0.jdbcUrl}" />
+		<property name="user" value="${c3p0.user}" />
+		<property name="password" value="${c3p0.password}" />
+		<!--连接池中保留的最小连接数。 -->
+		<property name="minPoolSize" value="${c3p0.minPoolSize}" />
+
+		<!--连接池中保留的最大连接数。Default: 15 -->
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+
+		<!-- 连接池在回收数据库连接时是否自动提交事务,如果为false，则会回滚未提交的事务 -->
+		<property name="autoCommitOnClose" value="${c3p0.autoCommitOnClose}" />
+
+		<!--设置连接超时时间 -->
+		<property name="checkoutTimeout" value="${c3p0.checkoutTimeout}" />
+
+		<!-- 连接失败后尝试的次数 -->
+		<property name="acquireRetryAttempts" value="${c3p0.acquireRetryAttempts}" />
+	</bean>
+
+
+	<!-- 配置sessionFactory工厂 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<!-- 依赖注入已经配置好的数据源dataSource -->
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="configLocation" value="classpath:hibernate/hibernate.cfg.xml"></property>
+	</bean>
+	<!-- 配置hibernateTemplate，简化api调用过程 -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- 静态工厂方法 创建jedisPool -->
+	<bean id="jedisPool" class="com.sso.dao.redis.JedisPoolFactory"
+		factory-method="getStaticJedisPool" />
+	
+</beans>
